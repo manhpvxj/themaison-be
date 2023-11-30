@@ -7,7 +7,7 @@ import {
 } from "@medusajs/medusa";
 
 class MomoService extends AbstractPaymentProcessor {
-  static identifier: string = "momo";
+  static identifier: string = "Momo";
   constructor(container, options) {
     super(container);
   }
@@ -70,4 +70,3 @@ class MomoService extends AbstractPaymentProcessor {
 }
 
 export default MomoService;
-
