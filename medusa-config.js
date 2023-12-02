@@ -61,6 +61,18 @@ const plugins = [
       secure: true,
     },
   },
+  {
+    resolve: `medusa-payment-momo`,
+    options: {
+      endpointUrl: process.env.MOMO_ENDPOINT_URL,
+      partnerCode: process.env.MOMO_PARTNER_CODE,
+      accessKey: process.env.MOMO_ACCESS_KEY,
+      secretKey: process.env.MOMO_SECRET_KEY,
+      redirectUrl: "https://google.com",
+      ipnUrl: "https://dev-api-2.rencity.vn/api/webhook/nine-pay",
+      extraData: "",
+    },
+  },
 ];
 
 const modules = {
