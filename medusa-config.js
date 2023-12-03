@@ -62,6 +62,38 @@ const plugins = [
     },
   },
   {
+    resolve: `medusa-plugin-algolia`,
+    options: {
+      applicationId: process.env.ALGOLIA_APP_ID,
+      adminApiKey: process.env.ALGOLIA_ADMIN_API_KEY,
+      settings: {
+        products: {
+          indexSettings: {
+            searchableAttributes: ["title", "description"],
+            attributesToRetrieve: [
+              "id",
+              "title",
+              "description",
+              "handle",
+              "thumbnail",
+              "variants",
+              "collection_title",
+              "collection_handle",
+            ],
+          },
+          transformer: (product) => {
+            return {
+              objectID: product.id,
+              title: product.title,
+              handle: product.handle,
+              thumbnail: product.thumbnail,
+            };
+          },
+        },
+      },
+    },
+  },
+  {
     resolve: `medusa-payment-momo`,
     options: {
       endpointUrl: process.env.MOMO_ENDPOINT_URL,
