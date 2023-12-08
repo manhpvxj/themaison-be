@@ -100,7 +100,7 @@ const plugins = [
       partnerCode: process.env.MOMO_PARTNER_CODE,
       accessKey: process.env.MOMO_ACCESS_KEY,
       secretKey: process.env.MOMO_SECRET_KEY,
-      redirectUrl: "http://localhost:8000/checkout/payment-status",
+      redirectUrl: "https://manhtheweeb.id.vn/checkout/payment-status",
       ipnUrl: "https://dev-api-2.rencity.vn/api/webhook/nine-pay",
       extraData: "",
     },
@@ -108,6 +108,12 @@ const plugins = [
 ];
 
 const modules = {
+  inventoryService: {
+    resolve: "@medusajs/inventory",
+  },
+  stockLocationService: {
+    resolve: "@medusajs/stock-location",
+  },
   /*eventBus: {
     resolve: "@medusajs/event-bus-redis",
     options: {
