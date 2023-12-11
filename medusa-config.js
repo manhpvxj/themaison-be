@@ -101,7 +101,7 @@ const plugins = [
       accessKey: process.env.MOMO_ACCESS_KEY,
       secretKey: process.env.MOMO_SECRET_KEY,
       redirectUrl: "https://manhtheweeb.id.vn/checkout/payment-status",
-      ipnUrl: "https://dev-api-2.rencity.vn/api/webhook/nine-pay",
+      ipnUrl: "https://api.manhtheweeb.id.vn/store/webhooks/momo",
       extraData: "",
     },
   },
