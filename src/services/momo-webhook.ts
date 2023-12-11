@@ -7,8 +7,8 @@ import {
   TransactionBaseService,
 } from "@medusajs/medusa";
 import { MedusaError } from "medusa-core-utils";
-import { IWebhookMomoRequest } from "src/types/webhook-momo.interface";
-import { createHmacString } from "src/utils";
+import { IWebhookMomoRequest } from "../types/webhook-momo.interface";
+import { createHmacString } from "../utils";
 import { EntityManager } from "typeorm";
 
 class MomoWebhookService extends TransactionBaseService {
@@ -21,12 +21,12 @@ class MomoWebhookService extends TransactionBaseService {
 
   constructor(container) {
     super(container);
-    this.manager_ = container.resolve("manager");
-    this.cartService_ = container.resolve("cartService");
-    this.orderService_ = container.resolve("orderService");
-    this.logger_ = container.resolve("logger");
-    this.completionStrat_ = container.resolve("cartCompletionStrategy");
-    this.idempotencyKeyService_ = container.resolve("idempotencyKeyService");
+    this.manager_ = container.manager;
+    this.cartService_ = container.cartService;
+    this.orderService_ = container.orderService;
+    this.logger_ = container.logger;
+    this.completionStrat_ = container.cartCompletionStrategy;
+    this.idempotencyKeyService_ = container.idempotencyKeyService;
   }
   async handleTransaction(body: IWebhookMomoRequest) {
     const isMomo = this.verifyIpnSignature(body);
