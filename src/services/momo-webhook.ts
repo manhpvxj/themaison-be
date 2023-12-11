@@ -51,6 +51,7 @@ class MomoWebhookService extends TransactionBaseService {
         await this.cartService_
           .withTransaction(transactionManager)
           .setPaymentSession(cartId, "momo");
+
         await this.cartService_
           .withTransaction(transactionManager)
           .authorizePayment(cartId);

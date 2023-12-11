@@ -8,5 +8,5 @@ export async function POST(
   const momoService: MomoWebhookService =
     req.scope.resolve("momoWebhookService");
   const { statusCode } = await momoService.handleTransaction(req.body);
-  res.sendStatus(statusCode);
+  res.sendStatus(statusCode || 204);
 }
