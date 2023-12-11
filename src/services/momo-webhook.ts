@@ -4,6 +4,7 @@ import {
   IdempotencyKeyService,
   Logger,
   OrderService,
+  PaymentProviderService,
   TransactionBaseService,
 } from "@medusajs/medusa";
 import { MedusaError } from "medusa-core-utils";
@@ -18,6 +19,7 @@ class MomoWebhookService extends TransactionBaseService {
   protected readonly logger_: Logger;
   protected readonly completionStrat_: AbstractCartCompletionStrategy;
   protected readonly idempotencyKeyService_: IdempotencyKeyService;
+  protected readonly paymentSession_: PaymentProviderService;
 
   constructor(container) {
     super(container);
@@ -39,49 +41,63 @@ class MomoWebhookService extends TransactionBaseService {
     await this.manager_.transaction(async (transactionManager) => {
       const { orderId: cartId } = body;
       this.logger_.info(`completing cart ${cartId}`);
+
       const order = await this.orderService_
+        .withTransaction(transactionManager)
         .retrieveByCartId(cartId)
-        .catch(() => undefined);
+        .catch((_) => undefined);
 
       if (!order) {
-        this.logger_.info(`initiating cart completing startegy ${cartId}`);
-
-        const idempotencyKeyServiceTx =
-          this.idempotencyKeyService_.withTransaction(transactionManager);
-        let idempotencyKey = await idempotencyKeyServiceTx
-          .retrieve({
-            request_path: "/webhooks/momo",
-            idempotency_key: cartId,
-          })
-          .catch(() => undefined);
-
-        if (!idempotencyKey) {
-          idempotencyKey = await this.idempotencyKeyService_
-            .withTransaction(transactionManager)
-            .create({
-              request_path: "/webhooks/momo",
-              idempotency_key: cartId,
-            });
-        }
-        this.logger_.info(`obtained idempotence key ${cartId}`);
-        const cart = await this.cartService_
+        await this.cartService_
           .withTransaction(transactionManager)
-          .retrieve(cartId, { select: ["context"] });
-
-        const { response_code, response_body } = await this.completionStrat_
+          .setPaymentSession(cartId, "momo");
+        await this.cartService_
           .withTransaction(transactionManager)
-          .complete(cartId, idempotencyKey, { ip: cart.context?.ip as string });
-
-        if (response_code !== 200) {
-          this.logger_.error(MedusaError.Types.UNEXPECTED_STATE, {
-            message: response_body["message"],
-            code: response_body["code"],
-          });
-        }
+          .authorizePayment(cartId);
+        await this.orderService_
+          .withTransaction(transactionManager)
+          .createFromCart(cartId);
         return { statusCode: 204 };
-      } else {
-        this.logger_.info(`cart completed ${cartId}`);
       }
+
+      // if (!order) {
+      //   this.logger_.info(`initiating cart completing startegy ${cartId}`);
+      //   const idempotencyKeyServiceTx =
+      //     this.idempotencyKeyService_.withTransaction(transactionManager);
+      //   let idempotencyKey = await idempotencyKeyServiceTx
+      //     .retrieve({
+      //       request_path: "/webhooks/momo",
+      //       idempotency_key: cartId,
+      //     })
+      //     .catch(() => undefined);
+
+      //   if (!idempotencyKey) {
+      //     idempotencyKey = await this.idempotencyKeyService_
+      //       .withTransaction(transactionManager)
+      //       .create({
+      //         request_path: "/webhooks/momo",
+      //         idempotency_key: cartId,
+      //       });
+      //   }
+      //   this.logger_.info(`obtained idempotence key ${cartId}`);
+      //   const cart = await this.cartService_
+      //     .withTransaction(transactionManager)
+      //     .retrieve(cartId, { select: ["context"] });
+
+      //   const { response_code, response_body } = await this.completionStrat_
+      //     .withTransaction(transactionManager)
+      //     .complete(cartId, idempotencyKey, { ip: cart.context?.ip as string });
+
+      //   if (response_code !== 200) {
+      //     this.logger_.error(MedusaError.Types.UNEXPECTED_STATE, {
+      //       message: response_body["message"],
+      //       code: response_body["code"],
+      //     });
+      //   }
+      //   return { statusCode: 204 };
+      // } else {
+      //   this.logger_.info(`cart completed ${cartId}`);
+      // }
     });
   }
   verifyIpnSignature = (body: IWebhookMomoRequest) => {
