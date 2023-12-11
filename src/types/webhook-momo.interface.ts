@@ -13,6 +13,22 @@ export interface ICheckPaymentStatusResponse {
   lastUpdated: number;
 }
 
+export interface IWebhookMomoRequest {
+  partnerCode: string;
+  orderId: string;
+  requestId: string;
+  amount: number;
+  orderInfo: string;
+  orderType: string;
+  transId: number;
+  resultCode: number;
+  message: string;
+  payType: EPayType;
+  responseTime: number;
+  extraData: string;
+  signature: string;
+}
+
 export enum EPayType {
   WEB_APP = "webApp",
   APP = "app",
@@ -29,3 +45,4 @@ export interface IRefundTrans {
   transId: number;
   createdTime: number;
 }
+
