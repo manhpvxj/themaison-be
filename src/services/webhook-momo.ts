@@ -29,6 +29,13 @@ class MomoWebhookService extends TransactionBaseService {
     this.idempotencyKeyService_ = container.resolve("idempotencyKeyService");
   }
   async handleTransaction(body: IWebhookMomoRequest) {
+    const isMomo = this.verifyIpnSignature(body);
+    if (!isMomo) {
+      this.logger_.error("Invalid signature");
+      return {
+        statusCode: 204,
+      };
+    }
     await this.manager_.transaction(async (transactionManager) => {
       const { orderId: cartId } = body;
       this.logger_.info(`completing cart ${cartId}`);
@@ -66,12 +73,12 @@ class MomoWebhookService extends TransactionBaseService {
           .complete(cartId, idempotencyKey, { ip: cart.context?.ip as string });
 
         if (response_code !== 200) {
-          throw new MedusaError(
-            MedusaError.Types.UNEXPECTED_STATE,
-            response_body["message"] as string,
-            response_body["code"] as string
-          );
+          this.logger_.error(MedusaError.Types.UNEXPECTED_STATE, {
+            message: response_body["message"],
+            code: response_body["code"],
+          });
         }
+        return { statusCode: 204 };
       } else {
         this.logger_.info(`cart completed ${cartId}`);
       }
@@ -117,4 +124,3 @@ class MomoWebhookService extends TransactionBaseService {
 }
 
 export default MomoWebhookService;
-
