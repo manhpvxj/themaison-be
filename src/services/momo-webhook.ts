@@ -55,10 +55,10 @@ class MomoWebhookService extends TransactionBaseService {
         await this.cartService_
           .withTransaction(transactionManager)
           .authorizePayment(cartId);
+
         await this.orderService_
           .withTransaction(transactionManager)
           .createFromCart(cartId);
-        return { statusCode: 204 };
       }
 
       // if (!order) {
@@ -100,6 +100,7 @@ class MomoWebhookService extends TransactionBaseService {
       //   this.logger_.info(`cart completed ${cartId}`);
       // }
     });
+    return { statusCode: 204 };
   }
   verifyIpnSignature = (body: IWebhookMomoRequest) => {
     const accessKey = process.env.MOMO_ACCESS_KEY;
