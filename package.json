@@ -16,14 +16,19 @@
     "clean": "cross-env ./node_modules/.bin/rimraf dist",
     "build": "cross-env npm run clean && npm run build:server && npm run build:admin",
     "build:server": "cross-env npm run clean && tsc -p tsconfig.server.json",
-    "build:admin": "medusa-admin build --deployment",
+    "build:admin": "medusa-admin build",
     "watch": "cross-env tsc --watch",
     "test": "cross-env jest",
     "seed": "cross-env medusa seed -f ./data/seed.json",
     "start": "cross-env npm run build && medusa start",
     "start:server": "npm install && cross-env npm run build:server && medusa start",
     "start:custom": "cross-env npm run build && node --preserve-symlinks --trace-warnings index.js",
-    "dev": "cross-env npm run build:server && medusa develop"
+    "dev": "cross-env npm run build:server && medusa develop",
+    "typeorm": "node --require ts-node/register node_modules/typeorm/cli.js",
+    "migration:generate": "npm run build && cross-env npm run typeorm -- -d ./data-source.ts migration:generate ./src/migrations/$npm_config_name",
+    "migration:up": "npm run build && npm run typeorm migration:run -- -d ./data-source.ts",
+    "migration:down": "npm run build && npm run typeorm -- -d ./data-source.ts migration:revert",
+    "migration:create": "cross-env npm run typeorm -- migration:create ./migrations/$npm_config_name"
   },
   "dependencies": {
     "@medusajs/admin": "7.1.7",
@@ -72,6 +77,7 @@
     "rimraf": "^3.0.2",
     "ts-jest": "^27.0.7",
     "ts-loader": "^9.2.6",
+    "ts-node": "^10.9.2",
     "typescript": "^4.5.2"
   },
   "jest": {
