@@ -1,4 +1,4 @@
 export enum BannerStatus {
-  ACTIVE = "ACTIVE",
-  INACTIVE = "INACTIVE",
+  ACTIVE = "active",
+  INACTIVE = "inactive",
 }

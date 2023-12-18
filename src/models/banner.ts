@@ -19,7 +19,7 @@ export class Banner extends SoftDeletableEntity {
   @Column({ type: "varchar" })
   description: string | null;
 
-  @ManyToMany(() => Image, { cascade: ["insert", "soft-remove"] })
+  @ManyToMany(() => Image, { cascade: ["insert"] })
   @JoinTable({
     name: "banner_images",
     joinColumn: {
@@ -32,9 +32,6 @@ export class Banner extends SoftDeletableEntity {
     },
   })
   images: Image[];
-
-  @Column({ type: "varchar" })
-  img_id: string;
 
   @Column({ type: "enum", enum: BannerStatus, default: BannerStatus.INACTIVE })
   status: BannerStatus;

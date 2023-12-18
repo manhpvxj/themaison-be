@@ -11,8 +11,14 @@ const AppDataSource = new DataSource({
   ssl: {
     rejectUnauthorized: false,
   },
-  entities: ["dist/models/*.js"],
-  migrations: ["dist/migrations/*.js"],
+  entities: [
+    "dist/models/*.js",
+    "node_modules/@medusajs/medusa/dist/models/!(*.index.js)",
+  ],
+  migrations: [
+    "dist/migrations/*.js",
+    "node_modules/@medusajs/medusa/dist/migrations/*.js",
+  ],
 });
 
 module.exports = {
