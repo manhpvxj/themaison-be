@@ -6,7 +6,9 @@ export async function GET(
   res: MedusaResponse
 ): Promise<void> {
   const bannerService = req.scope.resolve<BannerService>("bannerService");
-
+  const { limit, page } = req.params;
+  console.log("limit", limit);
+  console.log("page", page);
   const { banners, count } = await bannerService.getList({
     skip: req.listConfig?.skip,
     take: req.listConfig?.take,
@@ -18,4 +20,8 @@ export async function GET(
 export async function POST(
   req: MedusaRequest,
   res: MedusaResponse
-): Promise<void> {}
+): Promise<void> {
+  const bannerService = req.scope.resolve<BannerService>("bannerService");
+  const banner = await bannerService.create(req.body);
+  res.json(banner);
+}

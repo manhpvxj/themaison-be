@@ -1,15 +1,11 @@
 import { RouteConfig, RouteProps } from "@medusajs/admin";
-import { PhotoSolid, PlusMini } from "@medusajs/icons";
-import { Banner } from "../../../models/banner";
+import { PhotoSolid } from "@medusajs/icons";
 import { BannerTable } from "../../templates/banners/banner-table";
 
 const ListBannerPage = ({ notify }: RouteProps) => {
-  const onSuccess = (banner: Banner) => {
-    notify.success("Success", `Banner ${banner.title} created successfully`);
-  };
   return (
     <div className="flex h-full flex-col">
-      <BannerTable />
+      <BannerTable notify={notify} />
     </div>
   );
 };

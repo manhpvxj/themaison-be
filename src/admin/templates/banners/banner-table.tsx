@@ -43,8 +43,7 @@ interface ListBannerQuery {
 }
 const PAGE_SIZE = 10;
 const TABLE_HEIGHT = (PAGE_SIZE + 1) * 48;
-export const BannerTable = () => {
-  const location = useLocation();
+export const BannerTable = ({ notify }: { notify: any }) => {
   const [openCreateBanner, setOpenCreateBanner] = useState(false);
   const params: ListBannerQuery = {
     page: 0,
@@ -183,7 +182,9 @@ export const BannerTable = () => {
         </Container>
       </div>
       <div className="h-xlarge w-full" />
-      {openCreateBanner && <NewBanner onClose={handleCloseCreateBanner} />}
+      {openCreateBanner && (
+        <NewBanner onClose={handleCloseCreateBanner} notify={notify} />
+      )}
     </div>
   );
 };
