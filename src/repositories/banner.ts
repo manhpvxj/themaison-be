@@ -1,6 +1,7 @@
-import { EntityRepository, Repository } from "typeorm";
+import { dataSource } from "@medusajs/medusa/dist/loaders/database";
 
 import { Banner } from "../models/banner";
 
-@EntityRepository(Banner)
-export class BannerRepository extends Repository<Banner> {}
+export const BannerRepository = dataSource.getRepository(Banner);
+
+export default BannerRepository;
