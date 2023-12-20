@@ -6,7 +6,7 @@ export async function GET(
   res: MedusaResponse
 ): Promise<void> {
   const bannerService = req.scope.resolve<BannerService>("bannerService");
-  const { limit, page } = req.params;
+  const { limit, page } = req.query;
   console.log("limit", limit);
   console.log("page", page);
   const { banners, count } = await bannerService.getList({

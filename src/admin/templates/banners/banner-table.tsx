@@ -27,7 +27,7 @@ import {
   getPaginationRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { useAdminCustomQuery } from "medusa-react";
+import { useAdminCustomQuery, useAdminCustomDelete } from "medusa-react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { BannerStatus, IBanner } from "../../types/banner.interface";
 import NewBanner from "./new";
@@ -57,7 +57,7 @@ export const BannerTable = ({ notify }: { notify: any }) => {
 
   const table = useReactTable<IBanner>({
     data: data?.banners ?? [],
-    columns,
+    columns: columns(notify),
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
   });
@@ -170,7 +170,7 @@ export const BannerTable = ({ notify }: { notify: any }) => {
               "border-ui-border-base border-t":
                 data?.banners?.length !== PAGE_SIZE,
             })}
-            count={0}
+            count={data?.count || 0}
             canNextPage={table.getCanNextPage()}
             canPreviousPage={table.getCanPreviousPage()}
             nextPage={table.nextPage}
@@ -191,7 +191,7 @@ export const BannerTable = ({ notify }: { notify: any }) => {
 
 const columnHelper = createColumnHelper<IBanner>();
 
-const columns = [
+const columns = (notify: any) => [
   columnHelper.accessor("id", {
     header: "ID",
     cell: (info) => info.getValue(),
@@ -220,23 +220,27 @@ const columns = [
       );
     },
   }),
-  columnHelper.accessor("create_at", {
+  columnHelper.accessor("created_at", {
     header: "Created Date",
     cell: (info) => info.getValue(),
   }),
   columnHelper.display({
     id: "actions",
     cell: (info) => {
-      return <PriceListTableRowActions row={info.row} />;
+      return <PriceListTableRowActions row={info.row} notify={notify} />;
     },
   }),
 ];
 
 type BannerTableRowProps = {
   row: Row<IBanner>;
+  notify?: any;
 };
-const PriceListTableRowActions = ({ row }: BannerTableRowProps) => {
-  // const { mutateAsync: deleteFn } = useAdminDeletePriceList(row.original.id)
+const PriceListTableRowActions = ({ row, notify }: BannerTableRowProps) => {
+  const { mutateAsync: deleteFn } = useAdminCustomDelete(
+    `/banners/${row.original.id}`,
+    ["delete_banner", row.original.id]
+  );
   // const { mutateAsync: updateFn } = useAdminUpdatePriceList(row.original.id)
 
   const prompt = usePrompt();
@@ -248,7 +252,7 @@ const PriceListTableRowActions = ({ row }: BannerTableRowProps) => {
 
     const response = await prompt({
       title: "Are you sure?",
-      description: "This will permanently delete the price list",
+      description: "This will permanently delete the banner",
       verificationText: row.original.title,
     });
 
@@ -256,24 +260,23 @@ const PriceListTableRowActions = ({ row }: BannerTableRowProps) => {
       return;
     }
 
-    //   return deleteFn(undefined, {
-    //     onSuccess: () => {
-    //       notification(
-    //         "Price list deleted",
-    //         `Successfully deleted ${row.original.name}`,
-    //         "success"
-    //       )
-    //     },
-    //     onError: (err) => {
-    //       notification("An error occurred", getErrorMessage(err), "error")
-    //     },
-    //   })
+    return deleteFn(undefined, {
+      onSuccess: () => {
+        notify?.success(
+          "Banner deleted",
+          `Successfully deleted ${row.original.title}`
+        );
+      },
+      onError: (err) => {
+        notify?.error("An error occurred", err?.message);
+      },
+    });
   };
 
   const handleNavigate = (e: React.MouseEvent) => {
     e.stopPropagation();
 
-    navigate(`/a/pricing/${row.original.id}`);
+    navigate(`/a/banners/${row.original.id}`);
   };
 
   return (

@@ -5,35 +5,25 @@ import {
   FieldArrayWithId,
   useFieldArray,
   useWatch,
+  UseFormReturn,
 } from "react-hook-form";
 import FileUploadField from "../../atoms/file-upload-field";
 import { Button } from "@medusajs/ui";
 import { Trash, CheckCircleMiniSolid } from "@medusajs/icons";
 import { NestedForm } from "../../utils/nested-form";
 import Actionables, { ActionType } from "../../atoms/actionables";
-
-type ImageType = {
-  selected: boolean;
-  url: string;
-  name?: string;
-  size?: number;
-  nativeFile?: File;
-};
-
-export type MediaFormType = {
-  images: ImageType[];
-};
+import { NewBannerForm } from "../../types/banner.interface";
 
 type Props = {
-  form: NestedForm<MediaFormType>;
+  form: UseFormReturn<NewBannerForm>;
 };
 
 const MediaForm = ({ form }: Props) => {
-  const { control, path, setValue } = form;
+  const { control, setValue } = form;
 
   const { fields, append, remove } = useFieldArray({
     control: control,
-    name: path("images"),
+    name: "images",
   });
 
   const handleFilesChosen = (files: File[]) => {
@@ -52,7 +42,7 @@ const MediaForm = ({ form }: Props) => {
 
   const images = useWatch({
     control,
-    name: path("images"),
+    name: "images",
     defaultValue: [],
   });
 
@@ -74,7 +64,7 @@ const MediaForm = ({ form }: Props) => {
 
   const handleDeselect = () => {
     selected.forEach((i) => {
-      setValue(path(`images.${i}.selected`), false);
+      setValue(`images.${i}.selected`, false);
     });
   };
 
@@ -121,14 +111,14 @@ const MediaForm = ({ form }: Props) => {
 };
 
 type ImageProps = {
-  image: FieldArrayWithId<MediaFormType, "images", "id">;
+  image: FieldArrayWithId<NewBannerForm, "images", "id">;
   index: number;
   remove: (index: number) => void;
-  form: NestedForm<MediaFormType>;
+  form: UseFormReturn<NewBannerForm>;
 };
 
 const Image = ({ image, index, form, remove }: ImageProps) => {
-  const { control, path } = form;
+  const { control } = form;
 
   const actions: ActionType[] = [
     {
@@ -141,7 +131,7 @@ const Image = ({ image, index, form, remove }: ImageProps) => {
 
   return (
     <Controller
-      name={path(`images.${index}.selected`)}
+      name={`images.${index}.selected`}
       control={control}
       render={({ field: { value, onChange } }) => {
         return (
