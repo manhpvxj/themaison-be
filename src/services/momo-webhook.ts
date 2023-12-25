@@ -59,11 +59,11 @@ class MomoWebhookService extends TransactionBaseService {
         order = await this.orderService_
           .withTransaction(transactionManager)
           .createFromCart(cartId);
-
-        await this.orderService_
-          .withTransaction(transactionManager)
-          .capturePayment(order?.id);
       }
+
+      await this.orderService_
+        .withTransaction(transactionManager)
+        .capturePayment(order?.id);
 
       // if (!order) {
       //   this.logger_.info(`initiating cart completing startegy ${cartId}`);
