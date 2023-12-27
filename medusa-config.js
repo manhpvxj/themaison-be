@@ -122,18 +122,18 @@ const modules = {
   stockLocationService: {
     resolve: "@medusajs/stock-location",
   },
-  /*eventBus: {
+  eventBus: {
     resolve: "@medusajs/event-bus-redis",
     options: {
-      redisUrl: REDIS_URL
-    }
+      redisUrl: REDIS_URL,
+    },
   },
   cacheService: {
     resolve: "@medusajs/cache-redis",
     options: {
-      redisUrl: REDIS_URL
-    }
-  },*/
+      redisUrl: REDIS_URL,
+    },
+  },
 };
 
 /** @type {import('@medusajs/medusa').ConfigModule["projectConfig"]} */
