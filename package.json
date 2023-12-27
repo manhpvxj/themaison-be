@@ -28,7 +28,9 @@
     "migration:generate": "npm run build && cross-env npm run typeorm -- -d ./data-source.ts migration:generate ./src/migrations/$npm_config_name",
     "migration:up": "npm run build && npm run typeorm migration:run -- -d ./data-source.ts",
     "migration:down": "npm run build && npm run typeorm -- -d ./data-source.ts migration:revert",
-    "migration:create": "cross-env npm run typeorm -- migration:create ./migrations/$npm_config_name"
+    "migration:create": "cross-env npm run typeorm -- migration:create ./migrations/$npm_config_name",
+    "build:server:vps": "tsc -p tsconfig.server.json",
+    "start:vps": "npx medusa start"
   },
   "dependencies": {
     "@medusajs/admin": "7.1.7",

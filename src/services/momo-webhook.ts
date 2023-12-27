@@ -3,14 +3,14 @@ import {
   CartService,
   IdempotencyKeyService,
   Logger,
+  Order,
   OrderService,
   PaymentProviderService,
   TransactionBaseService,
 } from "@medusajs/medusa";
-import { MedusaError } from "medusa-core-utils";
+import { EntityManager } from "typeorm";
 import { IWebhookMomoRequest } from "../types/webhook-momo.interface";
 import { createHmacString } from "../utils";
-import { EntityManager } from "typeorm";
 
 class MomoWebhookService extends TransactionBaseService {
   protected readonly manager_: EntityManager;
@@ -41,8 +41,8 @@ class MomoWebhookService extends TransactionBaseService {
     await this.manager_.transaction(async (transactionManager) => {
       const { orderId: cartId } = body;
       this.logger_.info(`completing cart ${cartId}`);
-
-      const order = await this.orderService_
+      let order: Order;
+      order = await this.orderService_
         .withTransaction(transactionManager)
         .retrieveByCartId(cartId)
         .catch((_) => undefined);
@@ -56,10 +56,14 @@ class MomoWebhookService extends TransactionBaseService {
           .withTransaction(transactionManager)
           .authorizePayment(cartId);
 
-        await this.orderService_
+        order = await this.orderService_
           .withTransaction(transactionManager)
           .createFromCart(cartId);
       }
+
+      await this.orderService_
+        .withTransaction(transactionManager)
+        .capturePayment(order?.id);
 
       // if (!order) {
       //   this.logger_.info(`initiating cart completing startegy ${cartId}`);
